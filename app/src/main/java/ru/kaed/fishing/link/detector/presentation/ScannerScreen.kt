@@ -91,7 +91,10 @@ fun ScannerScreen(viewModel: ScannerViewModel) {
 
     var hasCameraPermission by remember {
         mutableStateOf(
-            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
         )
     }
 
@@ -119,10 +122,12 @@ fun ScannerScreen(viewModel: ScannerViewModel) {
     }
 
     Scaffold { padding ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)
-            .background(Color.Black)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(Color.Black)
+        ) {
 
             if (hasCameraPermission) {
                 CameraPreview(
@@ -177,7 +182,6 @@ fun ScannerScreen(viewModel: ScannerViewModel) {
 
             ModalBottomSheet(
                 onDismissRequest = {
-                    showBottomSheet = false
                     viewModel.resetState()
                     qrAnalyzerRef?.resume()
                 },
@@ -193,8 +197,10 @@ fun ScannerScreen(viewModel: ScannerViewModel) {
                         }
                     },
                     onCopyText = {
-                        val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                        val clip = android.content.ClipData.newPlainText("Scanned QR", result.content)
+                        val clipboard =
+                            context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                        val clip =
+                            android.content.ClipData.newPlainText("Scanned QR", result.content)
                         clipboard.setPrimaryClip(clip)
                     }
                 )
@@ -263,6 +269,7 @@ fun ScannerOverlay() {
         }
     }
 }
+
 @Composable
 fun ResultBottomSheetContent(
     result: UrlAnalysisResult,
@@ -309,7 +316,9 @@ fun ResultBottomSheetContent(
         if (result.isUrl && result.riskLevel != RiskLevel.SAFE && result.riskLevel != RiskLevel.INFO) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
-                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp)
             ) {
                 Column(Modifier.padding(12.dp)) {
                     Text(
@@ -342,7 +351,12 @@ fun ResultBottomSheetContent(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 itemsIndexed(result.redirectChain) { index, link ->
-                    RedirectCard(index = index, link = link, isLast = index == result.redirectChain.lastIndex, resultTitle = result.title)
+                    RedirectCard(
+                        index = index,
+                        link = link,
+                        isLast = index == result.redirectChain.lastIndex,
+                        resultTitle = result.title
+                    )
                 }
             }
             Spacer(Modifier.height(16.dp))
@@ -373,7 +387,9 @@ fun ResultBottomSheetContent(
                     onClick = onOpenBrowser,
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (result.riskLevel == RiskLevel.DANGEROUS) Color(0xFFD32F2F) else MaterialTheme.colorScheme.primary
+                        containerColor = if (result.riskLevel == RiskLevel.DANGEROUS) Color(
+                            0xFFD32F2F
+                        ) else MaterialTheme.colorScheme.primary
                     )
                 ) {
                     Text(if (result.riskLevel == RiskLevel.DANGEROUS) "Открыть (Риск!)" else "Открыть сайт")
@@ -396,10 +412,17 @@ fun RedirectCard(index: Int, link: ChainLink, isLast: Boolean, resultTitle: Stri
                 Box(
                     modifier = Modifier
                         .size(24.dp)
-                        .background(Color.Black.copy(alpha = 0.1f), androidx.compose.foundation.shape.CircleShape),
+                        .background(
+                            Color.Black.copy(alpha = 0.1f),
+                            androidx.compose.foundation.shape.CircleShape
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text((index + 1).toString(), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                    Text(
+                        (index + 1).toString(),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
                 Spacer(Modifier.width(8.dp))
 
@@ -418,7 +441,9 @@ fun RedirectCard(index: Int, link: ChainLink, isLast: Boolean, resultTitle: Stri
             } else {
                 try {
                     java.net.URI(link.url).host ?: "Ссылка"
-                } catch (e: Exception) { "Ссылка" }
+                } catch (_: Exception) {
+                    "Ссылка"
+                }
             }
 
             Text(

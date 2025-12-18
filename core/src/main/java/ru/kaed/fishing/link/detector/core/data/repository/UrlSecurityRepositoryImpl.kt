@@ -30,12 +30,12 @@ class UrlSecurityRepositoryImpl(
         followRedirects = false
     }
 
-    override suspend fun analyzeUrl(input: String): UrlAnalysisResult {
-        val isUrl = Patterns.WEB_URL.matcher(input).matches()
+    override suspend fun analyzeUrl(url: String): UrlAnalysisResult {
+        val isUrl = Patterns.WEB_URL.matcher(url).matches()
 
         if (!isUrl) {
             return UrlAnalysisResult(
-                content = input,
+                content = url,
                 finalUrl = null,
                 riskLevel = RiskLevel.INFO,
                 details = "Это текстовые данные, не ссылка.",
@@ -43,7 +43,7 @@ class UrlSecurityRepositoryImpl(
             )
         }
 
-        val (finalUrl, chain) = unshortenUrl(input)
+        val (finalUrl, chain) = unshortenUrl(url)
 
         val vtResult = checkVirusTotal(finalUrl)
 
@@ -53,7 +53,7 @@ class UrlSecurityRepositoryImpl(
         }
 
         return UrlAnalysisResult(
-            content = input,
+            content = url,
             finalUrl = finalUrl,
             redirectChain = chain,
             riskLevel = vtResult.risk,
@@ -74,7 +74,6 @@ class UrlSecurityRepositoryImpl(
         var limit = 8
         while (limit > 0) {
             try {
-
                 val response = client.head(currentUrl)
                 val status = response.status.value
 
@@ -84,12 +83,11 @@ class UrlSecurityRepositoryImpl(
                         val lastIndex = chain.lastIndex
                         if (lastIndex >= 0) {
 
-                            chain[lastIndex] = chain[lastIndex].copy(status = "HTTP $status (Redirect)")
+                            chain[lastIndex] =
+                                chain[lastIndex].copy(status = "HTTP $status (Redirect)")
                         }
 
-
                         currentUrl = resolveRelativeUrl(currentUrl, location)
-
 
                         chain.add(ChainLink(url = currentUrl, status = "Переход..."))
                         limit--
@@ -104,7 +102,7 @@ class UrlSecurityRepositoryImpl(
                     }
                     break
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 val lastIndex = chain.lastIndex
                 if (lastIndex >= 0) {
                     chain[lastIndex] = chain[lastIndex].copy(status = "Ошибка доступа")
@@ -115,10 +113,17 @@ class UrlSecurityRepositoryImpl(
         return currentUrl to chain
     }
 
-    private data class VtCheckResult(val risk: RiskLevel, val message: String, val score: Int, val maliciousCount: Int)
+    private data class VtCheckResult(
+        val risk: RiskLevel,
+        val message: String,
+        val score: Int,
+        val maliciousCount: Int
+    )
 
     private suspend fun checkVirusTotal(url: String): VtCheckResult {
-        val urlId = Base64.encodeToString(url.toByteArray(), Base64.NO_PADDING or Base64.NO_WRAP).trim()
+        val urlId =
+            Base64.encodeToString(url.toByteArray(), Base64.NO_PADDING or Base64.NO_WRAP).trim()
+
         val apiUrl = "https://www.virustotal.com/api/v3/urls/$urlId"
 
         return try {
@@ -126,13 +131,17 @@ class UrlSecurityRepositoryImpl(
                 header("x-apikey", apiKey)
             }
 
-            if (response.status.value == 401) return VtCheckResult(RiskLevel.UNKNOWN, "Ошибка API ключа", 0, 0)
-            if (response.status.value == 404) return VtCheckResult(RiskLevel.SAFE, "Новый URL (Нет в базе)", 0, 0)
+            if (response.status.value == 401) return VtCheckResult(
+                RiskLevel.UNKNOWN, "Ошибка API ключа", 0, 0
+            )
+            if (response.status.value == 404) return VtCheckResult(
+                RiskLevel.SAFE, "Новый URL (Нет в базе)", 0, 0
+            )
 
             val body = response.bodyAsText()
             val vtResponse = jsonParser.decodeFromString<VirusTotalResponse>(body)
-            val stats = vtResponse.data?.attributes?.stats
-            val reputation = vtResponse.data?.attributes?.reputation ?: 0
+            val stats = vtResponse.data?.let { it.attributes.stats }
+            val reputation = vtResponse.data?.let { it.attributes.reputation } ?: 0
 
             if (stats != null) {
                 val malicious = stats.malicious
@@ -185,7 +194,7 @@ class UrlSecurityRepositoryImpl(
             } else {
                 null
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
@@ -194,7 +203,7 @@ class UrlSecurityRepositoryImpl(
         return try {
             val baseUri = URI(baseUrl)
             baseUri.resolve(location).toString()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             location
         }
     }
