@@ -17,14 +17,16 @@ data class VtData(
 @Serializable
 data class VtAttributes(
     @SerialName("last_analysis_stats")
-    val stats: VtStats
+    val stats: VtStats,
+    val reputation: Int = 0
 )
 
 @Serializable
 data class VtStats(
     val malicious: Int,
     val suspicious: Int,
-    val harmless: Int
+    val harmless: Int,
+    val undetected: Int
 )
 
 @Serializable
