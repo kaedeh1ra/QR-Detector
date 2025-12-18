@@ -1,4 +1,4 @@
-package ru.kaed.fishing.link.core.detector.data.repository
+package ru.kaed.fishing.link.detector.core.data.repository
 
 import android.util.Base64
 import android.util.Log
@@ -11,10 +11,10 @@ import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
-import ru.kaed.fishing.link.core.detector.data.dto.VirusTotalResponse
-import ru.kaed.fishing.link.core.detector.domain.model.RiskLevel
-import ru.kaed.fishing.link.core.detector.domain.model.UrlAnalysisResult
-import ru.kaed.fishing.link.core.detector.domain.repository.UrlSecurityRepository
+import ru.kaed.fishing.link.detector.core.domain.model.RiskLevel
+import ru.kaed.fishing.link.detector.core.domain.model.UrlAnalysisResult
+import ru.kaed.fishing.link.detector.core.domain.repository.UrlSecurityRepository
+import ru.kaed.fishing.link.detector.core.data.dto.VirusTotalResponse
 
 class UrlSecurityRepositoryImpl(
     private val apiKey: String

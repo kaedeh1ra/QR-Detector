@@ -2,11 +2,13 @@ package ru.kaed.fishing.link.detector.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import ru.kaed.fishing.link.core.detector.domain.model.UrlAnalysisResult
-import ru.kaed.fishing.link.core.detector.domain.usecase.ScanUrlUseCase
+import ru.kaed.fishing.link.detector.core.domain.model.UrlAnalysisResult
+import ru.kaed.fishing.link.detector.core.domain.usecase.ScanUrlUseCase
 
 sealed interface ScannerUiState {
     data object Idle : ScannerUiState
@@ -15,7 +17,8 @@ sealed interface ScannerUiState {
     data class Error(val message: String) : ScannerUiState
 }
 
-class ScannerViewModel(
+@HiltViewModel
+class ScannerViewModel @Inject constructor(
     private val scanUrlUseCase: ScanUrlUseCase
 ) : ViewModel() {
 

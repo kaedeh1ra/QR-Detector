@@ -1,4 +1,4 @@
-package ru.kaed.fishing.link.core.detector.domain.model
+package ru.kaed.fishing.link.detector.core.domain.model
 
 data class UrlAnalysisResult(
     val content: String,

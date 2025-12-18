@@ -61,8 +61,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import ru.kaed.fishing.link.core.detector.domain.model.RiskLevel
-import ru.kaed.fishing.link.core.detector.domain.model.UrlAnalysisResult
+import ru.kaed.fishing.link.detector.core.domain.model.RiskLevel
+import ru.kaed.fishing.link.detector.core.domain.model.UrlAnalysisResult
 import ru.kaed.fishing.link.detector.presentation.camera.QrAnalyzer
 import java.util.concurrent.Executors
 

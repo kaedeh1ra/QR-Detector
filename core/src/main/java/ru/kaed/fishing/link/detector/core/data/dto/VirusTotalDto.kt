@@ -1,4 +1,4 @@
-package ru.kaed.fishing.link.core.detector.data.dto
+package ru.kaed.fishing.link.detector.core.data.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
